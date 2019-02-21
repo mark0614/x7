@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import x7.core.bean.DataPermission;
 import x7.config.SpringHelper;
@@ -20,6 +22,7 @@ import x7.repository.dao.Tx;
 @Configuration
 public class WebAop {
 
+	private Logger logger = LoggerFactory.getLogger(WebAop.class);
 
 	@Pointcut("execution(public * io.xream.x7.demo.controller.*.*(..))")
 	public void cut() {
@@ -65,7 +68,7 @@ public class WebAop {
 			/*
 			 * TX
 			 */
-			System.out.println("_______Transaction begin ....by request: " + mapping);
+			logger.info("_______Transaction begin ....by request: " + mapping);
 			long startTime = TimeUtil.now();
 			Tx.begin();
 			try {
@@ -82,7 +85,7 @@ public class WebAop {
 				Tx.commit();
 				long endTime = TimeUtil.now();
 				long handledTimeMillis = endTime - startTime;
-				System.out.println("_______Transaction end, cost time: " + (handledTimeMillis) + "ms");
+				logger.info("_______Transaction end, cost time: " + (handledTimeMillis) + "ms");
 				if (obj instanceof ViewEntity){
 					ViewEntity ve = (ViewEntity)obj;
 					ve.setHandledTimeMillis(handledTimeMillis);
@@ -99,8 +102,8 @@ public class WebAop {
 
 				String msg = ExceptionUtil.getMessage(e);
 
-				System.out.println("_______GOT EXCEIPTION ....by request: " + mapping + "  ....:" + msg);
-				System.out.println("_______ROLL BACKED ....by request: " + mapping);
+				logger.info("_______GOT EXCEIPTION ....by request: " + mapping + "  ....:" + msg);
+				logger.info("_______ROLL BACKED ....by request: " + mapping);
 
 				return ViewEntity.toast(msg);
 			}

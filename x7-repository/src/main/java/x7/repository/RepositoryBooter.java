@@ -126,6 +126,10 @@ public class RepositoryBooter {
                 DbType.value = DbType.ORACLE;
                 dialect = (Mapper.Dialect) Class.forName("x7.repository.dialect.OracleDialect").newInstance();
                 initDialect(dialect);
+            }else{//default
+                DbType.value = DbType.MYSQL;
+                dialect = (Mapper.Dialect) Class.forName("x7.repository.dialect.MySqlDialect").newInstance();
+                initDialect(dialect);
             }
         }catch (Exception e){
 
